@@ -1,5 +1,4 @@
 package com.laba.solvd.bank;
-
 import com.laba.solvd.bank.dao.impl.AccountRepositoryImpl;
 import com.laba.solvd.bank.dao.impl.CustomerRepositoryImpl;
 import com.laba.solvd.bank.dao.impl.TransactionRepositoryImpl;
@@ -18,7 +17,6 @@ import com.laba.solvd.bank.service.interfaces.TransactionService;
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Main {
     public static void main(String[] args) {

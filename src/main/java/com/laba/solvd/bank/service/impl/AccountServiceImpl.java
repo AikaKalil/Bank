@@ -1,7 +1,5 @@
 package com.laba.solvd.bank.service.impl;
-
 import com.laba.solvd.bank.dao.interfaces.AccountRepository;
-import com.laba.solvd.bank.dao.interfaces.TransactionRepository;
 import com.laba.solvd.bank.model.Account;
 import com.laba.solvd.bank.model.Transaction;
 import com.laba.solvd.bank.service.interfaces.AccountService;
@@ -28,7 +26,6 @@ public class AccountServiceImpl implements AccountService {
             List<Transaction> transactions = account.getTransaction().stream().
                     map(transaction -> transactionService.createTransaction(transaction))
                     .collect(Collectors.toList());
-
             account.setTransaction(transactions);
     }
         return account;

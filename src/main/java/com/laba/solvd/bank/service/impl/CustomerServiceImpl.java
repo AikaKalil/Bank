@@ -26,7 +26,6 @@ public class CustomerServiceImpl implements CustomerService {
             List<Account> accounts = customer.getAccount().stream()
                     .map(account -> accountService.createAccount(account))
                     .collect(Collectors.toList());
-
             customer.setAccount(accounts);
         }
         return customer;
