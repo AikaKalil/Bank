@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laba.solvd.bank.dao.interfaces.CustomerRepository">
+
+    <resultMap id="customerResultMap" type="com.laba.solvd.bank.model.Customer">
+        <id property="id" column="id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <collection property="account" ofType="com.laba.solvd.bank.model.Account" resultMap="accountResultMap"/>
+    </resultMap>
+
+    <resultMap id="accountResultMap" type="com.laba.solvd.bank.model.Account">
+        <id property="id" column="id"/>
+        <result property="accountType" column="account_type"/>
+        <result property="balance" column="balance"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="customerResultMap">
+        SELECT c.id, c.first_name, c.last_name, a.id, a.account_type, a.balance
+        FROM customers c
+        LEFT JOIN accounts a ON c.id = a.customer_id
+    </select>
+
+    <insert id="create" parameterType="com.laba.solvd.bank.model.Customer">
+        INSERT INTO customers (first_name, last_name)
+        VALUES (#{firstName}, #{lastName})
+    </insert>
+
+</mapper>
+

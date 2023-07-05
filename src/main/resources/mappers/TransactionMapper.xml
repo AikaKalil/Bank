@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laba.solvd.bank.dao.interfaces.TransactionRepository">
+
+    <resultMap id="transactionResultMap" type="com.laba.solvd.bank.model.Transaction">
+        <id property="id" column="id"/>
+        <result property="transactionType" column="transaction_type"/>
+        <result property="amount" column="amount"/>
+        <result property="transactionDate" column="transaction_date"/>
+        <association property="account" javaType="com.laba.solvd.bank.model.Account" columnPrefix="account_">
+            <id property="id" column="account_id"/>
+            <result property="accountType" column="account_type"/>
+            <result property="balance" column="balance"/>
+        </association>
+    </resultMap>
+
+    <select id="findAll" resultMap="transactionResultMap">
+        SELECT t.id, t.transaction_type, t.amount, t.transaction_date,
+        a.id as account_id, a.account_type, a.balance
+        FROM transactions t
+        INNER JOIN accounts a ON t.account_id = a.id
+    </select>
+
+    <insert id="create" parameterType="com.laba.solvd.bank.model.Transaction">
+        INSERT INTO transactions (transaction_type, amount, transaction_date, account_id)
+        VALUES (#{transactionType}, #{amount}, #{transactionDate}, #{account.id})
+    </insert>
+
+</mapper>

@@ -14,55 +14,77 @@ import com.laba.solvd.bank.service.impl.TransactionServiceImpl;
 import com.laba.solvd.bank.service.interfaces.AccountService;
 import com.laba.solvd.bank.service.interfaces.CustomerService;
 import com.laba.solvd.bank.service.interfaces.TransactionService;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-        Logger logger = Logger.getLogger(Main.class.getName());
+    public static Logger logger = Logger.getLogger(Main.class);
+
+    public static void main(String[] args) throws IOException {
+
+//
+//        AccountRepository accountRepository = new AccountRepositoryImpl();
+//        CustomerRepository customerRepository = new CustomerRepositoryImpl();
+//        TransactionRepository transactionRepository = new TransactionRepositoryImpl();
+//
+//        TransactionService transactionService = new TransactionServiceImpl(transactionRepository);
+//        AccountService accountService = new AccountServiceImpl(accountRepository, transactionService);
+//        CustomerService customerService = new CustomerServiceImpl(customerRepository, accountService);
+//
+//        Customer customer1 = new Customer("Ashley", "Connor");
+//        Customer customer2 = new Customer("Emily", "Meyer");
+//
+//        Account account1 = new Account("Savings", 1000.0);
+//        Account account2 = new Account("Checking", 100000);
+//
+//        Transaction transaction1 = new Transaction("Deposit", 500.0);
+//        Transaction transaction2 = new Transaction("Withdrawal", 6500.0);
+//
+//        List<Transaction> transactions = new ArrayList<>();
+//        transactions.add(transaction1);
+//        transactions.add(transaction2);
+//        List<Account> accounts=new ArrayList<>();
+//        accounts.add(account1);
+//        accounts.add(account2);
+//
+//        account1.setTransaction(transactions);
+//        customer1.setAccount(accounts);
+//        customerService.createCustomer(customer1);
+//
+//        List<Customer> customerList = customerService.getAllCustomers();
+//        List<Account> accountList = accountService.getAllAccounts();
+//
+//        // Displaying the retrieved customers and accounts
+//        for (Customer c : customerList) {
+//            logger.info("Customer: " + c.getFirstName() + " " + c.getLastName());
+//            for (Account a : c.getAccount()) {
+//                logger.info("Account: " + a.getAccountType() + ", Balance: " + a.getBalance());
+//                for (Transaction t : a.getTransaction()) {
+//                    logger.info("Transaction: " + t.getTransactionType() + ", Amount: " + t.getAmount());
+//                }
+//            }
+//        }
+
+        SqlSessionFactory sqlSessionFactory = MyBatis.getSqlSessionFactory();
+        try (SqlSession session = sqlSessionFactory.openSession(true)) {
+            CustomerRepository customerMapper = session.getMapper(CustomerRepository.class);
+            List<Customer> customer = customerMapper.findAll();
+            logger.info(customer);
+
+            AccountRepository accountMapper=session.getMapper(AccountRepository.class);
+            List<Account> account=accountMapper.findAll();
+            logger.info(account);
+
+            TransactionRepository transactionMapper=session.getMapper(TransactionRepository.class);
+            List<Transaction> transaction=transactionMapper.findAll();
+            logger.info(transaction);
 
 
-        AccountRepository accountRepository = new AccountRepositoryImpl();
-        CustomerRepository customerRepository = new CustomerRepositoryImpl();
-        TransactionRepository transactionRepository = new TransactionRepositoryImpl();
-
-        TransactionService transactionService = new TransactionServiceImpl(transactionRepository);
-        AccountService accountService = new AccountServiceImpl(accountRepository, transactionService);
-        CustomerService customerService = new CustomerServiceImpl(customerRepository, accountService);
-
-        Customer customer1 = new Customer("Ashley", "Connor");
-        Customer customer2 = new Customer("Emily", "Meyer");
-
-        Account account1 = new Account("Savings", 1000.0);
-        Account account2 = new Account("Checking", 100000);
-
-        Transaction transaction1 = new Transaction("Deposit", 500.0);
-        Transaction transaction2 = new Transaction("Withdrawal", 6500.0);
-
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.add(transaction1);
-        transactions.add(transaction2);
-        List<Account> accounts=new ArrayList<>();
-        accounts.add(account1);
-        accounts.add(account2);
-
-        account1.setTransaction(transactions);
-        customer1.setAccount(accounts);
-        customerService.createCustomer(customer1);
-
-        List<Customer> customerList = customerService.getAllCustomers();
-        List<Account> accountList = accountService.getAllAccounts();
-
-        // Displaying the retrieved customers and accounts
-        for (Customer c : customerList) {
-            logger.info("Customer: " + c.getFirstName() + " " + c.getLastName());
-            for (Account a : c.getAccount()) {
-                logger.info("Account: " + a.getAccountType() + ", Balance: " + a.getBalance());
-                for (Transaction t : a.getTransaction()) {
-                    logger.info("Transaction: " + t.getTransactionType() + ", Amount: " + t.getAmount());
-                }
-            }
         }
     }
 }

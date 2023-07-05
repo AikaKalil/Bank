@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laba.solvd.bank.dao.interfaces.AccountRepository">
+
+    <resultMap id="accountResultMap" type="com.laba.solvd.bank.model.Account">
+        <id property="id" column="id"/>
+        <result property="accountType" column="account_type"/>
+        <result property="balance" column="balance"/>
+        <collection property="transaction" ofType="com.laba.solvd.bank.model.Transaction" resultMap="transactionResultMap"/>
+    </resultMap>
+
+    <resultMap id="transactionResultMap" type="com.laba.solvd.bank.model.Transaction">
+        <id property="id" column="t.id"/>
+        <result property="transactionType" column="transaction_type"/>
+        <result property="amount" column="amount"/>
+        <result property="transactionDate" column="transaction_date"/>
+    </resultMap>
+
+    <sql id="baseQuery">
+        SELECT a.id, a.account_type, a.balance, t.id, t.transaction_type, t.amount, t.transaction_date
+        FROM accounts a
+        INNER JOIN transactions t ON a.id = t.account_id
+    </sql>
+
+    <select id="findAll" resultMap="accountResultMap">
+        <include refid="baseQuery"/>
+    </select>
+
+    <insert id="create" parameterType="com.laba.solvd.bank.model.Account">
+        INSERT INTO accounts (account_type, balance)
+        VALUES (#{accountType}, #{balance})
+    </insert>
+
+    <update id="update" parameterType="com.laba.solvd.bank.model.Account">
+        UPDATE accounts
+        SET account_type = #{accountType}, balance = #{balance}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
