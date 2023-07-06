@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface TransactionService {
     Transaction createTransaction(Transaction transaction);
-    List<Transaction> findAllTransactions();
+    List<Transaction> getAllTransactions();
 }

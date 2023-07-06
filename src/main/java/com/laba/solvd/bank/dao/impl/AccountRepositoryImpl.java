@@ -1,9 +1,8 @@
 package com.laba.solvd.bank.dao.impl;
 
 import com.laba.solvd.bank.dao.interfaces.AccountRepository;
-import com.laba.solvd.bank.dao.ConnectionPool;
+import com.laba.solvd.bank.config.ConnectionPool;
 import com.laba.solvd.bank.model.Account;
-import com.laba.solvd.bank.model.Customer;
 import com.laba.solvd.bank.model.Transaction;
 import org.apache.log4j.Logger;
 
@@ -16,10 +15,16 @@ public class AccountRepositoryImpl implements AccountRepository {
     Logger logger = Logger.getLogger(AccountRepositoryImpl.class.getName());
     private static final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance();
 
+    private String CREATE ="INSERT INTO accounts (account_type, balance) VALUES (?, ?)";
+    private String FIND_ALL="SELECT a.id, a.account_type, a.balance, t.id, t.transaction_type, t.amount, t.transaction_date" +
+            "FROM accounts a" +
+            "INNER JOIN transactions t ON a.id = t.account_id;";
+    private String UPDATE = "UPDATE accounts SET account_type = ?, balance = ? WHERE id = ?";
+
     @Override
     public void create(Account account) {
         Connection connection = CONNECTION_POOL.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO accounts (account_type, balance) VALUES (?, ?)",Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = connection.prepareStatement(CREATE,Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, account.getAccountType());
             statement.setDouble(2, account.getBalance());
             statement.executeUpdate();
@@ -41,9 +46,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         Connection connection = CONNECTION_POOL.getConnection();
         List<Account> accounts = new ArrayList<>();
         try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT a.id, a.account_type, a.balance, t.id, t.transaction_type, t.amount, t.transaction_date\n" +
-                     "FROM accounts a\n" +
-                     "INNER JOIN transactions t ON a.id = t.account_id;")) {
+             ResultSet resultSet = statement.executeQuery(FIND_ALL)) {
             accounts = mapAccounts(resultSet);
         } catch (SQLException e) {
             logger.info("Unable to find accounts!",e);
@@ -55,15 +58,16 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public void update(Account account) {
-        String sql = "UPDATE accounts SET account_type = ?, balance = ? WHERE id = ?";
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        Connection connection = CONNECTION_POOL.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
             statement.setString(1, account.getAccountType());
             statement.setDouble(2, account.getBalance());
             statement.setLong(3, account.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             logger.error("Unable to update!", e);
+        }finally {
+            CONNECTION_POOL.releaseConnection(connection);
         }
     }
 

@@ -18,20 +18,16 @@
         <result property="transactionDate" column="transaction_date"/>
     </resultMap>
 
-    <sql id="baseQuery">
-        SELECT a.id, a.account_type, a.balance, t.id, t.transaction_type, t.amount, t.transaction_date
-        FROM accounts a
-        INNER JOIN transactions t ON a.id = t.account_id
-    </sql>
-
-    <select id="findAll" resultMap="accountResultMap">
-        <include refid="baseQuery"/>
-    </select>
-
     <insert id="create" parameterType="com.laba.solvd.bank.model.Account">
         INSERT INTO accounts (account_type, balance)
         VALUES (#{accountType}, #{balance})
     </insert>
+
+    <select id="findAll" resultMap="accountResultMap">
+        SELECT a.id, a.account_type, a.balance, t.id, t.transaction_type, t.amount, t.transaction_date
+        FROM accounts a
+        INNER JOIN transactions t ON a.id = t.account_id
+    </select>
 
     <update id="update" parameterType="com.laba.solvd.bank.model.Account">
         UPDATE accounts

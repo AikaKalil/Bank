@@ -1,6 +1,6 @@
 package com.laba.solvd.bank.dao.impl;
 
-import com.laba.solvd.bank.dao.ConnectionPool;
+import com.laba.solvd.bank.config.ConnectionPool;
 import com.laba.solvd.bank.dao.interfaces.CustomerRepository;
 import com.laba.solvd.bank.model.Account;
 import com.laba.solvd.bank.model.Customer;
@@ -14,14 +14,16 @@ import java.util.List;
 public class CustomerRepositoryImpl implements CustomerRepository {
     private final ConnectionPool CONNECTION_POOL=ConnectionPool.getInstance();
     Logger logger = Logger.getLogger(CustomerRepositoryImpl.class.getName());
-    private final String sqlCustomer="SELECT c.id as customer_id, c.first_name as first_name,c.last_name as last_name, a.id as account_id, a.account_type as account_type, a.balance as balance, a.date_opened as date_opened\n" +
-            "FROM customers c\n" +
+    private String FIND_ALL="SELECT c.id as customer_id, c.first_name as first_name,c.last_name as last_name, a.id as account_id, a.account_type as account_type, a.balance as balance, a.date_opened as date_opened" +
+            "FROM customers c" +
             "LEFT JOIN accounts a ON c.id = a.customer_id;";
+
+    private String CREATE="INSERT INTO customers (firstName, lastName) VALUES (?, ?)";
 
     @Override
     public void create(Customer customer) {
         Connection connection = CONNECTION_POOL.getConnection();
-        try(PreparedStatement prepareStatement= connection.prepareStatement("INSERT INTO customers (firstName, lastName) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)){
+        try(PreparedStatement prepareStatement= connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS)){
             prepareStatement.setString(2, customer.getFirstName());
             prepareStatement.setString(3, customer.getLastName());
             prepareStatement.executeUpdate();
@@ -41,7 +43,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         Connection connection = CONNECTION_POOL.getConnection();
         List<Customer>customers=null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlCustomer);
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
             ResultSet resultSet = preparedStatement.executeQuery();
             customers =mapCustomers(resultSet);
 

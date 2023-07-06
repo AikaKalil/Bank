@@ -47,7 +47,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
+            <version>8.0.33</version>
         </dependency>
 
         <dependency>
@@ -84,7 +84,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.laba.solvd.militaryProject.Main</mainClass>
+                            <mainClass>com.laba.solvd.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
